@@ -146,8 +146,7 @@ class HeatingRod:
             self.last_deactivation_time = datetime.now()
             heating_time = (datetime.now() - self.last_activation_time)
             day = datetime.now().strftime('%j')
-            self.__heating_secs_per_day.put(day, self.__heating_secs_per_day.get(day, 0) + heating_time.total_seconds())
-            self.__heating_secs_per_day.put((datetime.now() + timedelta(days=1)).strftime('%j'), 0)   # clean up next day value
+            self.__heating_secs_per_day.put(day, self.__heating_secs_per_day.get(day, 0) + heating_time.total_seconds(), ttl_sec=366*24*60*60)
             logging.debug(self.__str__() + " deactivated (heating time " + duration(heating_time.total_seconds(), 1) + ")")
         self.__shelly.switch(self.id, False)
         self.is_activated = False
@@ -178,26 +177,22 @@ class Heater:
     def set_listener(self, listener):
         self.__listener = listener
 
-    def heater_consumption(self, day_of_year: int) -> Optional[int]:
-        heater_secs_of_day = [heating_rod.heating_secs_of_day(day_of_year) for heating_rod in self.__heating_rods]
-        heater_secs_of_day = [secs for secs in heater_secs_of_day if secs is not None]
-        if len(heater_secs_of_day) > 0:
-            return int((sum(heater_secs_of_day) * self.power_step) / 60)
-        else:
-            return None
+    def __heater_consumption_per_day(self, day_of_year: int) -> int:
+        secs_list = [heating_rod.heating_secs_of_day(day_of_year) for heating_rod in self.__heating_rods]
+        heater_secs_today = sum([secs for secs in secs_list if secs is not None])
+        heater_hours_today = heater_secs_today / (60*60)
+        power = int(heater_hours_today * self.power_step)
+        return power
 
     @property
     def heater_consumption_today(self) -> int:
-        day_of_year = int(datetime.now().strftime('%j'))
-        consumption = self.heater_consumption(day_of_year)
-        if consumption is None:
-            consumption = 0
-        return consumption
+        today = int(datetime.now().strftime('%j'))
+        return self.__heater_consumption_per_day(today)
 
     @property
     def __heater_consumption_list_current_year(self) -> List[int]:
         current_day = int(datetime.now().strftime('%j'))
-        consumption_per_day = [self.heater_consumption(day_of_year) for day_of_year in range(0, current_day+1)]
+        consumption_per_day = [self.__heater_consumption_per_day(day_of_year) for day_of_year in range(0, current_day+1)]
         return [consumption for consumption in consumption_per_day if consumption is not None]
 
     @property
@@ -238,11 +233,12 @@ class Heater:
     def power(self) -> int:
         return self.num_heating_rods_active * self.power_step
 
-    def set_power(self, power: int):
-        if self.power > power:
-            self.decrease()
-        elif self.power < power:
+    def set_power(self, new_power: int):
+        num_required_rods = int(new_power / self.power_step)
+        if num_required_rods > self.num_heating_rods_active:
             self.increase()
+        elif num_required_rods < self.num_heating_rods_active:
+            self.decrease()
 
     def increase(self):
         if datetime.now() > (self.__last_time_increased + timedelta(minutes=1 + self.num_heating_rods_active)):
@@ -250,7 +246,7 @@ class Heater:
             for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if not heating_rod.is_activated]:
                 heating_rod.activate()          # increase heater power (1 heater only)
                 break
-            self.__measure()
+            self.__sync()
 
     def decrease(self):
         if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
@@ -258,7 +254,12 @@ class Heater:
             for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
                 heating_rod.deactivate()        # decrease heater power consumption (1 heater only)
                 break
-            self.__measure()
+            self.__sync()
+
+    def __sync(self):
+        for heating_rods in self.__heating_rods:
+            heating_rods.sync()
+        self.__listener()
 
     def stop(self):
         self.__is_running = False
@@ -270,9 +271,7 @@ class Heater:
 
     def __measure(self):
         while self.__is_running:
-            for heating_rods in self.__heating_rods:
-                heating_rods.sync()
-            self.__listener()
+            self.__sync()
             sleep(15)
 
     def __auto_decrease(self):
