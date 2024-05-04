@@ -281,7 +281,7 @@ class Heater:
     def __auto_decrease(self):
         while self.__is_running:
             auto_decrease_time_min = 17
-            if datetime.now() > (self.__last_time_decreased + timedelta(minutes=auto_decrease_time_min)) or datetime.now() > (self.__last_time_increased + timedelta(minutes=auto_decrease_time_min)):
+            if datetime.now() > (self.__last_time_decreased + timedelta(minutes=auto_decrease_time_min)):
                 logging.info("auto decrease (" + str(auto_decrease_time_min) + " min)")
                 self.decrease()
             sleep(60)
