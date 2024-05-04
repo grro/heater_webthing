@@ -48,6 +48,19 @@ class HeaterThing(Thing):
                          'readOnly': True,
                      }))
 
+
+        self.max_power = Value(heater.max_power)
+        self.add_property(
+            Property(self,
+                     'max_power',
+                     self.max_power,
+                     metadata={
+                         'title': 'max_power',
+                         "type": "integer",
+                         'description': 'the maximum heater power (watt) ',
+                         'readOnly': True,
+                     }))
+
         self.num_heating_rods_active = Value(heater.num_heating_rods_active)
         self.add_property(
             Property(self,
@@ -139,6 +152,7 @@ class HeaterThing(Thing):
     def _on_value_changed(self):
         self.power.notify_of_external_update(self.heater.power)
         self.power_step.notify_of_external_update(self.heater.power_step)
+        self.max_power.notify_of_external_update(self.heater.max_power)
         self.num_heating_rods_active.notify_of_external_update(self.heater.num_heating_rods_active)
         self.num_heating_rod0_activated.notify_of_external_update(self.heater.get_heating_rod(0).is_activated)
         self.num_heating_rod1_activated.notify_of_external_update(self.heater.get_heating_rod(1).is_activated)

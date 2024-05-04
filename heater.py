@@ -233,6 +233,10 @@ class Heater:
     def power(self) -> int:
         return self.num_heating_rods_active * self.power_step
 
+    @property
+    def max_power(self) -> int:
+        return 3 * self.power_step
+
     def set_power(self, new_power: int):
         num_required_rods = int(new_power / self.power_step)
         if num_required_rods > self.num_heating_rods_active:
