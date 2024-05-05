@@ -251,6 +251,9 @@ class Heater:
                 heating_rod.activate()          # increase heater power (1 heater only)
                 break
             self.__sync()
+        else:
+            logging.info("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
+
 
     def decrease(self):
         if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
@@ -259,6 +262,8 @@ class Heater:
                 heating_rod.deactivate()        # decrease heater power consumption (1 heater only)
                 break
             self.__sync()
+        else:
+            logging.info("reject decrease (last decrease=" + self.__last_time_decreased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_decreased).total_seconds()) + " sec ago)")
 
     def __sync(self):
         for heating_rods in self.__heating_rods:
