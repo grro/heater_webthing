@@ -280,21 +280,30 @@ class Heater:
 
     def __measure(self):
         while self.__is_running:
-            self.__sync()
+            try:
+                self.__sync()
+            except Exception as e:
+                logging.warning("error occurred on sync " + str(e))
             sleep(15)
 
     def __auto_decrease(self):
         while self.__is_running:
-            auto_decrease_time_min = 17
-            if datetime.now() > (self.__last_time_decreased + timedelta(minutes=auto_decrease_time_min)):
-                logging.info("auto decrease (" + str(auto_decrease_time_min) + " min)")
-                self.decrease()
-            sleep(60)
+            try:
+                auto_decrease_time_min = 17
+                if datetime.now() > (self.__last_time_decreased + timedelta(minutes=auto_decrease_time_min)):
+                    logging.info("auto decrease (" + str(auto_decrease_time_min) + " min)")
+                    self.decrease()
+            except Exception as e:
+                logging.warning("error occurred on __auto_decrease " + str(e))
+        sleep(60)
 
     def __auto_restart_scripts(self):
         while self.__is_running:
-            for id in range (0, 3):
-                self.__shelly.restart_script(id+1)
+            try:
+                for id in range (0, 3):
+                    self.__shelly.restart_script(id+1)
+            except Exception as e:
+                logging.warning("error occurred on __auto_restart_scripts " + str(e))
             sleep(7 * 60 * 60)
 
     def __register_scripts(self):
