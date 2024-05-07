@@ -254,7 +254,6 @@ class Heater:
         else:
             logging.info("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
 
-
     def decrease(self):
         if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
             self.__last_time_decreased = datetime.now()
@@ -295,7 +294,7 @@ class Heater:
                     self.decrease()
             except Exception as e:
                 logging.warning("error occurred on __auto_decrease " + str(e))
-        sleep(60)
+            sleep(60)
 
     def __auto_restart_scripts(self):
         while self.__is_running:
