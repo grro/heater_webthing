@@ -136,10 +136,11 @@ class HeatingRod:
         self.is_activated = self.__shelly.query(self.id)
 
     def activate(self):
+        self.last_activation_time = datetime.now()
+        if not self.is_activated:
+            logging.info(self.__str__() + " activated")
         self.__shelly.switch(self.id, True)
         self.is_activated = True
-        self.last_activation_time = datetime.now()
-        logging.info(self.__str__() + " activated")
 
     def deactivate(self):
         if self.is_activated:
@@ -252,7 +253,7 @@ class Heater:
                 break
             self.__sync()
         else:
-            logging.info("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
+            logging.debug("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
 
     def decrease(self):
         if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
@@ -262,7 +263,7 @@ class Heater:
                 break
             self.__sync()
         else:
-            logging.info("reject decrease (last decrease=" + self.__last_time_decreased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_decreased).total_seconds()) + " sec ago)")
+            logging.debug("reject decrease (last decrease=" + self.__last_time_decreased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_decreased).total_seconds()) + " sec ago)")
 
     def __sync(self):
         for heating_rods in self.__heating_rods:
