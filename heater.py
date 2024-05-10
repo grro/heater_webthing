@@ -139,7 +139,7 @@ class HeatingRod:
         self.__shelly.switch(self.id, True)
         self.is_activated = True
         self.last_activation_time = datetime.now()
-        logging.debug(self.__str__() + " activated")
+        logging.info(self.__str__() + " activated")
 
     def deactivate(self):
         if self.is_activated:
@@ -147,7 +147,7 @@ class HeatingRod:
             heating_time = (datetime.now() - self.last_activation_time)
             day = datetime.now().strftime('%j')
             self.__heating_secs_per_day.put(day, self.__heating_secs_per_day.get(day, 0) + heating_time.total_seconds(), ttl_sec=366*24*60*60)
-            logging.debug(self.__str__() + " deactivated (heating time " + duration(heating_time.total_seconds(), 1) + ")")
+            logging.info(self.__str__() + " deactivated (heating time " + duration(heating_time.total_seconds(), 1) + ")")
         self.__shelly.switch(self.id, False)
         self.is_activated = False
 
