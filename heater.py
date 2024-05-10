@@ -133,7 +133,11 @@ class HeatingRod:
         self.deactivate()
 
     def sync(self):
-        self.is_activated = self.__shelly.query(self.id)
+        new_is_activated = self.__shelly.query(self.id)
+        if new_is_activated == False and self.is_activated == True:
+            self.deactivate()
+        elif new_is_activated == True and self.is_activated == False:
+            self.activate()
 
     def activate(self):
         self.last_activation_time = datetime.now()
