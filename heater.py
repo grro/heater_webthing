@@ -290,7 +290,8 @@ class Heater:
             try:
                 auto_decrease_time_min = 17
                 if datetime.now() > (self.__last_time_decreased + timedelta(minutes=auto_decrease_time_min)):
-                    logging.info("auto decrease (" + str(auto_decrease_time_min) + " min)")
+                    if self.power > 0:
+                        logging.info("auto decrease (" + str(auto_decrease_time_min) + " min)")
                     self.decrease()
             except Exception as e:
                 logging.warning("error occurred on __auto_decrease " + str(e))
