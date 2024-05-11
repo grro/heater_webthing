@@ -146,13 +146,16 @@ class HeatingRod:
         self.__shelly.switch(self.id, True)
         self.is_activated = True
 
-    def deactivate(self):
+    def deactivate(self, reason: str = None):
         if self.is_activated:
             self.last_deactivation_time = datetime.now()
             heating_time = (datetime.now() - self.last_activation_time)
             day = datetime.now().strftime('%j')
             self.__heating_secs_per_day.put(day, self.__heating_secs_per_day.get(day, 0) + heating_time.total_seconds(), ttl_sec=366*24*60*60)
-            logging.info(self.__str__() + " deactivated (heating time " + duration(heating_time.total_seconds(), 1) + ")")
+            info = "heating time " + duration(heating_time.total_seconds(), 1)
+            if reason is not None:
+                info = reason + "; " + info
+            logging.info(self.__str__() + " deactivated (" + info + ")")
         self.__shelly.switch(self.id, False)
         self.is_activated = False
 
@@ -259,11 +262,11 @@ class Heater:
         else:
             logging.debug("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
 
-    def decrease(self):
+    def decrease(self, reason: str = None):
         if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
             self.__last_time_decreased = datetime.now()
             for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
-                heating_rod.deactivate()        # decrease heater power consumption (1 heater only)
+                heating_rod.deactivate(reason)        # decrease heater power consumption (1 heater only)
                 break
             self.__sync()
         else:
@@ -295,9 +298,7 @@ class Heater:
             try:
                 auto_decrease_time_min = 17
                 if datetime.now() > (self.__last_time_decreased + timedelta(minutes=auto_decrease_time_min)):
-                    if self.power > 0:
-                        logging.info("auto decrease (" + str(auto_decrease_time_min) + " min)")
-                    self.decrease()
+                   self.decrease(reason="auto decrease each " + str(auto_decrease_time_min) + " min")
             except Exception as e:
                 logging.warning("error occurred on __auto_decrease " + str(e))
             sleep(60)
