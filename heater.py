@@ -135,14 +135,17 @@ class HeatingRod:
     def sync(self):
         new_is_activated = self.__shelly.query(self.id)
         if new_is_activated == False and self.is_activated == True:
-            self.deactivate()
+            self.deactivate(reason="due to sync")
         elif new_is_activated == True and self.is_activated == False:
-            self.activate()
+            self.activate(reason="due to sync")
 
-    def activate(self):
+    def activate(self, reason: str = None):
         self.last_activation_time = datetime.now()
         if not self.is_activated:
-            logging.info(self.__str__() + " activated")
+            info = ""
+            if reason is not None:
+                info = "(" + reason + ")"
+            logging.info(self.__str__() + " activated " + info)
         self.__shelly.switch(self.id, True)
         self.is_activated = True
 
@@ -298,7 +301,7 @@ class Heater:
             try:
                 auto_decrease_time_min = 17
                 if datetime.now() > (self.__last_time_decreased + timedelta(minutes=auto_decrease_time_min)):
-                   self.decrease(reason="auto decrease each " + str(auto_decrease_time_min) + " min")
+                   self.decrease(reason="due to auto decrease each " + str(auto_decrease_time_min) + " min")
             except Exception as e:
                 logging.warning("error occurred on __auto_decrease " + str(e))
             sleep(60)
