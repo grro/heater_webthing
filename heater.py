@@ -249,7 +249,11 @@ class Heater:
         return 3 * self.power_step
 
     def set_power(self, new_power: int):
-        num_required_rods = int(new_power / self.power_step)
+        if new_power <= 0:
+            num_required_rods = 0
+        else:
+            num_required_rods = int(new_power / self.power_step)
+
         if num_required_rods > self.num_heating_rods_active:
             self.increase()
         elif num_required_rods < self.num_heating_rods_active:
