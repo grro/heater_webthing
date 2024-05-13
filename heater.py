@@ -6,6 +6,7 @@ from threading import Thread
 from redzoo.math.display import duration
 from time import sleep
 from string import Template
+from threading import RLock
 from redzoo.database.simple import SimpleDB
 import logging
 
@@ -177,6 +178,7 @@ class HeatingRod:
 class Heater:
 
     def __init__(self, addr: str, directory: str):
+        self._lock = RLock()
         self.__is_running = True
         self.__listener = lambda: None    # "empty" listener
         self.__shelly = Shelly3Pro(addr)
@@ -260,22 +262,24 @@ class Heater:
             self.decrease()
 
     def increase(self):
-        if datetime.now() > (self.__last_time_increased + timedelta(minutes=1 + self.num_heating_rods_active)):
-            self.__last_time_increased = datetime.now()
-            for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if not heating_rod.is_activated]:
-                heating_rod.activate()          # increase heater power (1 heater only)
-                break
-        else:
-            logging.debug("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
+        with self._lock:
+            if datetime.now() > (self.__last_time_increased + timedelta(minutes=1 + self.num_heating_rods_active)):
+                self.__last_time_increased = datetime.now()
+                for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if not heating_rod.is_activated]:
+                    heating_rod.activate()          # increase heater power (1 heater only)
+                    break
+            else:
+                logging.debug("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
 
     def decrease(self, reason: str = None):
-        if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
-            self.__last_time_decreased = datetime.now()
-            for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
-                heating_rod.deactivate(reason)        # decrease heater power consumption (1 heater only)
-                break
-        else:
-            logging.debug("reject decrease (last decrease=" + self.__last_time_decreased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_decreased).total_seconds()) + " sec ago)")
+        with self._lock:
+            if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
+                self.__last_time_decreased = datetime.now()
+                for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
+                    heating_rod.deactivate(reason)        # decrease heater power consumption (1 heater only)
+                    break
+            else:
+                logging.debug("reject decrease (last decrease=" + self.__last_time_decreased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_decreased).total_seconds()) + " sec ago)")
 
     def __sync(self):
         for heating_rods in self.__heating_rods:
@@ -296,7 +300,7 @@ class Heater:
                 self.__sync()
             except Exception as e:
                 logging.warning("error occurred on sync " + str(e))
-            sleep(3*59)
+            sleep(59)
 
     def __auto_decrease(self):
         while self.__is_running:
