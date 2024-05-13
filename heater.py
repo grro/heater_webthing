@@ -296,7 +296,7 @@ class Heater:
                 self.__sync()
             except Exception as e:
                 logging.warning("error occurred on sync " + str(e))
-            sleep(15)
+            sleep(3*59)
 
     def __auto_decrease(self):
         while self.__is_running:
