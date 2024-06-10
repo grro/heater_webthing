@@ -134,11 +134,14 @@ class HeatingRod:
         self.deactivate()
 
     def sync(self):
-        new_is_activated = self.__shelly.query(self.id)
-        if new_is_activated == False and self.is_activated == True:
-            self.deactivate(reason="due to sync")
-        elif new_is_activated == True and self.is_activated == False:
-            self.activate(reason="due to sync")
+        try:
+            new_is_activated = self.__shelly.query(self.id)
+            if new_is_activated == False and self.is_activated == True:
+                self.deactivate(reason="due to sync")
+            elif new_is_activated == True and self.is_activated == False:
+                self.activate(reason="due to sync")
+        except Exception as e:
+            print("sync failed: " + str(e))
 
     def activate(self, reason: str = None):
         self.last_activation_time = datetime.now()
@@ -178,7 +181,7 @@ class HeatingRod:
 class Heater:
 
     def __init__(self, addr: str, directory: str):
-        self._lock = RLock()
+        self.__lock = RLock()
         self.__is_running = True
         self.__listener = lambda: None    # "empty" listener
         self.__shelly = Shelly3Pro(addr)
@@ -262,7 +265,7 @@ class Heater:
             self.decrease()
 
     def increase(self):
-        with self._lock:
+        with self.__lock:
             if datetime.now() > (self.__last_time_increased + timedelta(minutes=1 + self.num_heating_rods_active)):
                 self.__last_time_increased = datetime.now()
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if not heating_rod.is_activated]:
@@ -272,7 +275,7 @@ class Heater:
                 logging.debug("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
 
     def decrease(self, reason: str = None):
-        with self._lock:
+        with self.__lock:
             if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
                 self.__last_time_decreased = datetime.now()
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
