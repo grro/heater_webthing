@@ -141,7 +141,7 @@ class HeatingRod:
             elif new_is_activated == True and self.is_activated == False:
                 self.activate(reason="due to sync")
         except Exception as e:
-            print("sync failed: " + str(e))
+            logging.warning("sync failed: " + str(e))
 
     def activate(self, reason: str = None):
         self.last_activation_time = datetime.now()
