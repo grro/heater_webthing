@@ -294,11 +294,11 @@ class Heater:
     def start(self):
         Thread(target=self.__register_scripts, daemon=True).start()
         Thread(target=self.__measure, daemon=True).start()
+        Thread(target=self.__statistics, daemon=True).start()
         Thread(target=self.__auto_decrease, daemon=True).start()
         Thread(target=self.__auto_restart_scripts, daemon=True).start()
 
     def __measure(self):
-        last_day_reported = -1
         while self.__is_running:
             try:
                 self.__sync()
@@ -306,13 +306,20 @@ class Heater:
                 logging.warning("error occurred on sync " + str(e))
             sleep(59)
 
-            now = datetime.now()
-            current_day = int(now.strftime("%d"))
-            if current_day != last_day_reported and now.hour >= 19:
-                last_day_reported = current_day
-                logging.info("heater consumption today:          " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
-                logging.info("heater consumption current year:   " + str(round(self.heater_consumption_current_year/1000,1)) + " kWh")
-                logging.info("heater consumption estimated year: " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
+    def __statistics(self):
+        last_day_reported = -1
+        while self.__is_running:
+            try:
+                now = datetime.now()
+                current_day = int(now.strftime("%d"))
+                if current_day != last_day_reported and now.hour >= 19:
+                    last_day_reported = current_day
+                    logging.info("heater consumption today:          " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
+                    logging.info("heater consumption current year:   " + str(round(self.heater_consumption_current_year/1000,1)) + " kWh")
+                    logging.info("heater consumption estimated year: " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
+            except Exception as e:
+                logging.warning("error occurred on statistics " + str(e))
+            sleep(10 * 60)
 
     def __auto_decrease(self):
         while self.__is_running:
