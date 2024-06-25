@@ -316,7 +316,7 @@ class Heater:
                     last_day_reported = current_day
                     logging.info("heater consumption today:          " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
                     logging.info("heater consumption current year:   " + str(round(self.heater_consumption_current_year/1000,1)) + " kWh")
-                    logging.info("heater consumption estimated year: " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
+                    logging.info("heater consumption estimated year: " + str(round(self.heater_consumption_estimated_year/1000,1)) + " kWh")
             except Exception as e:
                 logging.warning("error occurred on statistics " + str(e))
             sleep(10 * 60)
