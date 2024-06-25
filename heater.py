@@ -310,7 +310,7 @@ class Heater:
             current_day = int(now.strftime("%d"))
             if current_day != last_day_reported and now.hour >= 19:
                 last_day_reported = current_day
-                logging.info("\nheater consumption today:          " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
+                logging.info("heater consumption today:          " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
                 logging.info("heater consumption current year:   " + str(round(self.heater_consumption_current_year/1000,1)) + " kWh")
                 logging.info("heater consumption estimated year: " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
 
