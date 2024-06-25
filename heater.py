@@ -154,17 +154,20 @@ class HeatingRod:
         self.is_activated = True
 
     def deactivate(self, reason: str = None):
-        if self.is_activated:
-            self.last_deactivation_time = datetime.now()
-            heating_time = (datetime.now() - self.last_activation_time)
-            day = datetime.now().strftime('%j')
-            self.__heating_secs_per_day.put(day, self.__heating_secs_per_day.get(day, 0) + heating_time.total_seconds(), ttl_sec=366*24*60*60)
-            info = "heating time " + duration(heating_time.total_seconds(), 1)
-            if reason is not None:
-                info = reason + "; " + info
-            logging.info(self.__str__() + " deactivated (" + info + ")")
-        self.__shelly.switch(self.id, False)
-        self.is_activated = False
+        try:
+            if self.is_activated:
+                self.last_deactivation_time = datetime.now()
+                heating_time = (datetime.now() - self.last_activation_time)
+                day = datetime.now().strftime('%j')
+                self.__heating_secs_per_day.put(day, self.__heating_secs_per_day.get(day, 0) + heating_time.total_seconds(), ttl_sec=366*24*60*60)
+                info = "heating time " + duration(heating_time.total_seconds(), 1)
+                if reason is not None:
+                    info = reason + "; " + info
+                logging.info(self.__str__() + " deactivated (" + info + ")")
+            self.__shelly.switch(self.id, False)
+            self.is_activated = False
+        except Exception as e:
+            logging.warning("error occurred deactivating " + str(e))
 
     def heating_secs_of_day(self, day_of_year: int) -> Optional[int]:
         secs = self.__heating_secs_per_day.get(str(day_of_year), -1)
@@ -189,7 +192,6 @@ class Heater:
         self.__heating_rods = [HeatingRod(self.__shelly, 0, directory), HeatingRod(self.__shelly, 1, directory), HeatingRod(self.__shelly, 2, directory)]
         self.__last_time_decreased = datetime.now() - timedelta(minutes=10)
         self.__last_time_increased = datetime.now() - timedelta(minutes=10)
-        self.__register_scripts()
 
     def set_listener(self, listener):
         self.__listener = listener
@@ -290,17 +292,27 @@ class Heater:
         self.__is_running = False
 
     def start(self):
+        Thread(target=self.__register_scripts, daemon=True).start()
         Thread(target=self.__measure, daemon=True).start()
         Thread(target=self.__auto_decrease, daemon=True).start()
         Thread(target=self.__auto_restart_scripts, daemon=True).start()
 
     def __measure(self):
+        last_day_reported = -1
         while self.__is_running:
             try:
                 self.__sync()
             except Exception as e:
                 logging.warning("error occurred on sync " + str(e))
             sleep(59)
+
+            now = datetime.now()
+            current_day = int(now.strftime("%d"))
+            if current_day != last_day_reported and now.hour > 20:
+                last_day_reported = current_day
+                logging.info("\nheater consumption today:          " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
+                logging.info("heater consumption current year:   " + str(round(self.heater_consumption_current_year/1000,1)) + " kWh")
+                logging.info("heater consumption estimated year: " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
 
     def __auto_decrease(self):
         while self.__is_running:
