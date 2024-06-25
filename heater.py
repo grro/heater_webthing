@@ -180,10 +180,11 @@ class HeatingRod:
 
 class Heater:
 
-    def __init__(self, addr: str, directory: str):
+    def __init__(self, addr: str, directory: str, power_step: int = 500):
         self.__lock = RLock()
         self.__is_running = True
         self.__listener = lambda: None    # "empty" listener
+        self.power_step = power_step
         self.__shelly = Shelly3Pro(addr)
         self.__heating_rods = [HeatingRod(self.__shelly, 0, directory), HeatingRod(self.__shelly, 1, directory), HeatingRod(self.__shelly, 2, directory)]
         self.__last_time_decreased = datetime.now() - timedelta(minutes=10)
@@ -240,10 +241,6 @@ class Heater:
             if heater.id == id:
                 return heater
         return None
-
-    @property
-    def power_step(self) -> int:
-        return 520
 
     @property
     def power(self) -> int:
