@@ -183,7 +183,7 @@ class HeatingRod:
 
 class Heater:
 
-    def __init__(self, addr: str, directory: str, power_step: int = 500):
+    def __init__(self, addr: str, directory: str, power_step: int = 510):
         self.__lock = RLock()
         self.__is_running = True
         self.__listener = lambda: None    # "empty" listener
@@ -275,7 +275,7 @@ class Heater:
 
     def decrease(self, reason: str = None):
         with self.__lock:
-            if datetime.now() > (self.__last_time_decreased + timedelta(seconds=10)):
+            if (datetime.now() > (self.__last_time_decreased + timedelta(seconds=10))) and (datetime.now() > (self.__last_time_increased + timedelta(seconds=10))):
                 self.__last_time_decreased = datetime.now()
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
                     heating_rod.deactivate(reason)        # decrease heater power consumption (1 heater only)
