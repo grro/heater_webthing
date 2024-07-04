@@ -313,7 +313,7 @@ class Heater:
                 now = datetime.now()
                 if now > (reported_date + timedelta(hours=3)):
                     reported_date = now
-                    logging.info("heater consumption today:          " + str(round(self.heater_consumption_today/1000,1)) + " kWh")
+                    logging.info("heater consumption today:          " + str(round(self.heater_consumption_today)) + " Watt")
                     logging.info("heater consumption current year:   " + str(round(self.heater_consumption_current_year/1000,1)) + " kWh")
                     logging.info("heater consumption estimated year: " + str(round(self.heater_consumption_estimated_year/1000,1)) + " kWh")
             except Exception as e:
