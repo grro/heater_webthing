@@ -230,6 +230,12 @@ class Heater:
     def num_heating_rods_active(self) -> int:
         return len([heating_rod for heating_rod in self.__heating_rods if heating_rod.is_activated])
 
+    def set_num_heating_rods_active(self, num: int):
+        if self.num_heating_rods_active < num and self.num_rods < num:
+            self.increase()
+        elif self.num_heating_rods_active > num and num > 0:
+            self.decrease()
+
     @property
     def __sorted_heating_rods(self) -> List[HeatingRod]:
         heating_rod_list = list(self.__heating_rods)
@@ -256,17 +262,6 @@ class Heater:
     def max_power(self) -> int:
         return 3 * self.power_step
 
-    def set_power(self, new_power: int):
-        if new_power <= 0:
-            num_required_rods = 0
-        else:
-            num_required_rods = int(new_power / self.power_step)
-
-        if num_required_rods > self.num_heating_rods_active:
-            self.increase()
-        elif num_required_rods < self.num_heating_rods_active:
-            self.decrease()
-
     def increase(self):
         with self.__lock:
             if datetime.now() > (self.__last_time_increased + timedelta(seconds=10 + self.num_heating_rods_active)):
@@ -276,6 +271,7 @@ class Heater:
                     break
             else:
                 logging.debug("reject increase (last increase=" + self.__last_time_increased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_increased).total_seconds()) + " sec ago)")
+            self.__listener()
 
     def decrease(self, reason: str = None):
         with self.__lock:
@@ -286,6 +282,7 @@ class Heater:
                     break
             else:
                 logging.debug("reject decrease (last decrease=" + self.__last_time_decreased.strftime("%H:%M:%S") + "; " + str((datetime.now() - self.__last_time_decreased).total_seconds()) + " sec ago)")
+            self.__listener()
 
     def __sync(self):
         for heating_rods in self.__heating_rods:

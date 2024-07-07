@@ -24,7 +24,7 @@ class HeaterThing(Thing):
         self.heater = heater
         self.heater.set_listener(self.on_value_changed)
 
-        self.power = Value(heater.power, heater.set_power)
+        self.power = Value(heater.power, heater)
         self.add_property(
             Property(self,
                      'power',
@@ -33,7 +33,7 @@ class HeaterThing(Thing):
                          'title': 'power',
                          "type": "integer",
                          'description': 'the heater power (watt)',
-                         'readOnly': False,
+                         'readOnly': True,
                      }))
 
         self.power_step = Value(heater.power_step)
@@ -72,7 +72,7 @@ class HeaterThing(Thing):
                          'readOnly': True,
                      }))
 
-        self.num_heating_rods_active = Value(heater.num_heating_rods_active)
+        self.num_heating_rods_active = Value(heater.num_heating_rods_active, heater.set_num_heating_rods_active)
         self.add_property(
             Property(self,
                      'num_heating_rods_active',
@@ -81,7 +81,7 @@ class HeaterThing(Thing):
                          'title': 'num_heating_rods_active',
                          "type": "integer",
                          'description': 'num heating rods active',
-                         'readOnly': True,
+                         'readOnly': False,
                      }))
 
 
