@@ -48,74 +48,62 @@ class HeaterThing(Thing):
                          'readOnly': True,
                      }))
 
-        self.num_heating_rods = Value(heater.num_heating_rods)
+        self.heating_rods = Value(heater.heating_rods)
         self.add_property(
             Property(self,
-                     'num_heating_rods',
-                     self.num_heating_rods,
+                     'heating_rods',
+                     self.heating_rods,
                      metadata={
-                         'title': 'num_heating_rods',
+                         'title': 'heating_rods',
                          "type": "integer",
                          'description': 'the number of heater rods',
                          'readOnly': True,
                      }))
 
-        self.power_max = Value(heater.power_max)
+        self.heating_rods_active = Value(heater.heating_rods_active, heater.set_heating_rods_active)
         self.add_property(
             Property(self,
-                     'power_max',
-                     self.power_max,
+                     'heating_rods_active',
+                     self.heating_rods_active,
                      metadata={
-                         'title': 'power_max',
-                         "type": "integer",
-                         'description': 'the maximum heater power (watt) ',
-                         'readOnly': True,
-                     }))
-
-        self.num_heating_rods_active = Value(heater.num_heating_rods_active, heater.set_num_heating_rods_active)
-        self.add_property(
-            Property(self,
-                     'num_heating_rods_active',
-                     self.num_heating_rods_active,
-                     metadata={
-                         'title': 'num_heating_rods_active',
+                         'title': 'heating_rods_active',
                          "type": "integer",
                          'description': 'num heating rods active',
                          'readOnly': False,
                      }))
 
 
-        self.num_heating_rod0_activated = Value(heater.get_heating_rod(0))
+        self.heating_rod0_activated = Value(heater.get_heating_rod(0))
         self.add_property(
             Property(self,
-                     'num_heating_rod0_activated',
-                     self.num_heating_rod0_activated,
+                     'heating_rod0_activated',
+                     self.heating_rod0_activated,
                      metadata={
-                         'title': 'num_heating_rod0_activated',
+                         'title': 'heating_rod0_activated',
                          "type": "boolean",
                          'description': 'true, if heating rod 0 is activated',
                          'readOnly': True,
                      }))
 
-        self.num_heating_rod1_activated = Value(heater.get_heating_rod(1))
+        self.heating_rod1_activated = Value(heater.get_heating_rod(1))
         self.add_property(
             Property(self,
-                     'num_heating_rod1_activated',
-                     self.num_heating_rod1_activated,
+                     'heating_rod1_activated',
+                     self.heating_rod1_activated,
                      metadata={
-                         'title': 'num_heating_rod1_activated',
+                         'title': 'heating_rod1_activated',
                          "type": "boolean",
                          'description': 'true, if heating rod 1 is activated',
                          'readOnly': True,
                      }))
 
-        self.num_heating_rod2_activated = Value(heater.get_heating_rod(2))
+        self.heating_rod2_activated = Value(heater.get_heating_rod(2))
         self.add_property(
             Property(self,
-                     'num_heating_rod2_activated',
-                     self.num_heating_rod2_activated,
+                     'heating_rod2_activated',
+                     self.heating_rod2_activated,
                      metadata={
-                         'title': 'num_heating_rod2_activated',
+                         'title': 'heating_rod2_activated',
                          "type": "boolean",
                          'description': 'true, if heating rod 2 is activated',
                          'readOnly': True,
@@ -163,12 +151,11 @@ class HeaterThing(Thing):
     def _on_value_changed(self):
         self.power.notify_of_external_update(self.heater.power)
         self.heating_rod_power.notify_of_external_update(self.heater.heating_rod_power)
-        self.power_max.notify_of_external_update(self.heater.power_max)
-        self.num_heating_rods.notify_of_external_update(self.heater.num_heating_rods)
-        self.num_heating_rods_active.notify_of_external_update(self.heater.num_heating_rods_active)
-        self.num_heating_rod0_activated.notify_of_external_update(self.heater.get_heating_rod(0).is_activated)
-        self.num_heating_rod1_activated.notify_of_external_update(self.heater.get_heating_rod(1).is_activated)
-        self.num_heating_rod2_activated.notify_of_external_update(self.heater.get_heating_rod(2).is_activated)
+        self.heating_rods.notify_of_external_update(self.heater.heating_rods)
+        self.heating_rods_active.notify_of_external_update(self.heater.heating_rods_active)
+        self.heating_rod0_activated.notify_of_external_update(self.heater.get_heating_rod(0).is_activated)
+        self.heating_rod1_activated.notify_of_external_update(self.heater.get_heating_rod(1).is_activated)
+        self.heating_rod2_activated.notify_of_external_update(self.heater.get_heating_rod(2).is_activated)
         self.heater_consumption_today.notify_of_external_update(self.heater.heater_consumption_today)
         self.heater_consumption_today.notify_of_external_update(self.heater.heater_consumption_today)
         self.heater_consumption_current_year.notify_of_external_update(self.heater.heater_consumption_current_year)

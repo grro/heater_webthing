@@ -227,19 +227,19 @@ class Heater:
             return 0
 
     @property
-    def num_heating_rods_active(self) -> int:
+    def heating_rods_active(self) -> int:
         return len([heating_rod for heating_rod in self.__heating_rods if heating_rod.is_activated])
 
-    def set_num_heating_rods_active(self, new_num: int, reason: str = None):
+    def set_heating_rods_active(self, new_num: int, reason: str = None):
         # increase
-        if self.num_heating_rods_active < new_num:
-            if new_num <= self.num_heating_rods:
+        if self.heating_rods_active < new_num:
+            if new_num <= self.heating_rods:
                 self.__last_time_num_active_rods_changed = datetime.now()
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if not heating_rod.is_activated]:
                     heating_rod.activate()          # increase heater power (1 heater only)
                     break
         # decrease
-        elif new_num < self.num_heating_rods_active:
+        elif new_num < self.heating_rods_active:
             if new_num >= 0:
                 self.__last_time_num_active_rods_changed = datetime.now()
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
@@ -262,15 +262,11 @@ class Heater:
 
     @property
     def power(self) -> int:
-        return self.num_heating_rods_active * self.heating_rod_power
+        return self.heating_rods_active * self.heating_rod_power
 
     @property
-    def num_heating_rods(self) -> int:
+    def heating_rods(self) -> int:
         return len(self.__heating_rods)
-
-    @property
-    def power_max(self) -> int:
-        return self.num_heating_rods * self.heating_rod_power
 
     def __sync(self):
         for heating_rods in self.__heating_rods:
@@ -313,10 +309,10 @@ class Heater:
         auto_decrease_time_min = 23
         while self.__is_running:
             try:
-                if self.num_heating_rods_active > 0:
+                if self.heating_rods_active > 0:
                     if datetime.now() > (self.__last_time_auto_decreased + timedelta(minutes=auto_decrease_time_min)):
                         self.__last_time_auto_decreased = datetime.now()
-                        self.set_num_heating_rods_active(self.num_heating_rods_active-1, reason="due to auto decrease each " + str(auto_decrease_time_min) + " min")
+                        self.set_heating_rods_active(self.heating_rods_active - 1, reason="due to auto decrease each " + str(auto_decrease_time_min) + " min")
             except Exception as e:
                 logging.warning("error occurred on __auto_decrease " + str(e))
             sleep(60)
