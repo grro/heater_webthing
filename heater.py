@@ -249,6 +249,10 @@ class Heater:
         return self.num_heating_rods_active * self.power_step
 
     @property
+    def num_rods(self) -> int:
+        return len(self.__heating_rods)
+
+    @property
     def max_power(self) -> int:
         return 3 * self.power_step
 
