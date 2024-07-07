@@ -265,7 +265,7 @@ class Heater:
 
     def increase(self):
         with self.__lock:
-            if datetime.now() > (self.__last_time_increased + timedelta(minutes=1 + self.num_heating_rods_active)):
+            if datetime.now() > (self.__last_time_increased + timedelta(seconds=10 + self.num_heating_rods_active)):
                 self.__last_time_increased = datetime.now()
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if not heating_rod.is_activated]:
                     heating_rod.activate()          # increase heater power (1 heater only)
@@ -275,7 +275,7 @@ class Heater:
 
     def decrease(self, reason: str = None):
         with self.__lock:
-            if (datetime.now() > (self.__last_time_decreased + timedelta(seconds=10))) and (datetime.now() > (self.__last_time_increased + timedelta(seconds=10))):
+            if (datetime.now() > (self.__last_time_decreased + timedelta(seconds=15))) and (datetime.now() > (self.__last_time_increased + timedelta(seconds=10))):
                 self.__last_time_decreased = datetime.now()
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
                     heating_rod.deactivate(reason)        # decrease heater power consumption (1 heater only)
