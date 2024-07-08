@@ -145,6 +145,20 @@ class HeaterThing(Thing):
                          'readOnly': True,
                      }))
 
+
+        self.last_time_power_updated = Value(heater.last_time_power_updated.strftime("%Y-%m-%dT%H:%M"))
+        self.add_property(
+            Property(self,
+                     'last_time_power_updated',
+                     self.last_time_power_updated,
+                     metadata={
+                         'title': 'last_time_power_updated',
+                         "type": "integer",
+                         'description': 'the last time power updated ISO8601 string (UTC)',
+                         'readOnly': True,
+                     }))
+
+
     def on_value_changed(self):
         self.ioloop.add_callback(self._on_value_changed)
 
@@ -158,6 +172,7 @@ class HeaterThing(Thing):
         self.heating_rod2_activated.notify_of_external_update(self.heater.get_heating_rod(2).is_activated)
         self.heater_consumption_today.notify_of_external_update(self.heater.heater_consumption_today)
         self.heater_consumption_today.notify_of_external_update(self.heater.heater_consumption_today)
+        self.last_time_power_updated.notify_of_external_update(self.heater.last_time_power_updated.strftime("%Y-%m-%dT%H:%M"))
         self.heater_consumption_current_year.notify_of_external_update(self.heater.heater_consumption_current_year)
         self.heater_consumption_estimated_year.notify_of_external_update(self.heater.heater_consumption_estimated_year)
 

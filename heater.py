@@ -191,6 +191,7 @@ class Heater:
         self.__shelly = Shelly3Pro(addr)
         self.__heating_rods = [HeatingRod(self.__shelly, 0, directory), HeatingRod(self.__shelly, 1, directory), HeatingRod(self.__shelly, 2, directory)]
         self.__last_time_auto_decreased = datetime.now()
+        self.last_time_power_updated = datetime.now()
 
     def set_listener(self, listener):
         self.__listener = listener
@@ -235,12 +236,14 @@ class Heater:
             if new_num <= self.heating_rods:
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if not heating_rod.is_activated]:
                     heating_rod.activate()          # increase heater power (1 heater only)
+                    self.last_time_power_updated = datetime.now()
                     break
         # decrease
         elif new_num < self.heating_rods_active:
             if new_num >= 0:
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
                     heating_rod.deactivate(reason)        # decrease heater power consumption (1 heater only)
+                    self.last_time_power_updated = datetime.now()
                     break
 
     @property
