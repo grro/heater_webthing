@@ -16,7 +16,7 @@ class HeaterThing(Thing):
         Thing.__init__(
             self,
             'urn:dev:ops:heater-1',
-            'HeaterSwitch',
+            'Heater',
             ['MultiLevelSensor'],
             description
         )
@@ -31,7 +31,7 @@ class HeaterThing(Thing):
                      self.power,
                      metadata={
                          'title': 'power',
-                         "type": "integer",
+                         "type": "number",
                          'description': 'the heater power (watt)',
                          'readOnly': True,
                      }))
@@ -43,7 +43,7 @@ class HeaterThing(Thing):
                      self.heating_rod_power,
                      metadata={
                          'title': 'heating_rod_power',
-                         "type": "integer",
+                         "type": "number",
                          'description': 'the power of a heating rod (watt) ',
                          'readOnly': True,
                      }))
@@ -55,7 +55,7 @@ class HeaterThing(Thing):
                      self.heating_rods,
                      metadata={
                          'title': 'heating_rods',
-                         "type": "integer",
+                         "type": "number",
                          'description': 'the number of heater rods',
                          'readOnly': True,
                      }))
@@ -67,7 +67,7 @@ class HeaterThing(Thing):
                      self.heating_rods_active,
                      metadata={
                          'title': 'heating_rods_active',
-                         "type": "integer",
+                         "type": "number",
                          'description': 'num heating rods active',
                          'readOnly': False,
                      }))
@@ -116,7 +116,7 @@ class HeaterThing(Thing):
                      self.heater_consumption_today,
                      metadata={
                          'title': 'heater_consumption_today',
-                         "type": "integer",
+                         "type": "number",
                          'description': 'heater power consumption current day',
                          'readOnly': True,
                      }))
@@ -128,7 +128,7 @@ class HeaterThing(Thing):
                      self.heater_consumption_current_year,
                      metadata={
                          'title': 'heater_consumption_current_year',
-                         "type": "integer",
+                         "type": "number",
                          'description': 'heater power consumption current year',
                          'readOnly': True,
                      }))
@@ -140,7 +140,7 @@ class HeaterThing(Thing):
                      self.heater_consumption_estimated_year,
                      metadata={
                          'title': 'heater_consumption_estimated_year',
-                         "type": "integer",
+                         "type": "number",
                          'description': 'heater power consumption current year estimated',
                          'readOnly': True,
                      }))
@@ -153,7 +153,7 @@ class HeaterThing(Thing):
                      self.last_time_power_updated,
                      metadata={
                          'title': 'last_time_power_updated',
-                         "type": "integer",
+                         "type": "number",
                          'description': 'the last time power updated ISO8601 string (UTC)',
                          'readOnly': True,
                      }))
