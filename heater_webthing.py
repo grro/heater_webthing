@@ -153,7 +153,7 @@ class HeaterThing(Thing):
                      self.last_time_power_updated,
                      metadata={
                          'title': 'last_time_power_updated',
-                         "type": "number",
+                         "type": "string",
                          'description': 'the last time power updated ISO8601 string (UTC)',
                          'readOnly': True,
                      }))
