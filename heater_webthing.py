@@ -24,7 +24,7 @@ class HeaterThing(Thing):
         self.heater = heater
         self.heater.set_listener(self.on_value_changed)
 
-        self.power = Value(heater.power, heater)
+        self.power = Value(heater.power)
         self.add_property(
             Property(self,
                      'power',
