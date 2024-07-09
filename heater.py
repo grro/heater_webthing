@@ -237,6 +237,7 @@ class Heater:
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if not heating_rod.is_activated]:
                     heating_rod.activate()          # increase heater power (1 heater only)
                     self.last_time_power_updated = datetime.now()
+                    logging.info(str(self.heating_rods_active) + " rods active")
                     break
         # decrease
         elif new_num < self.heating_rods_active:
@@ -244,6 +245,7 @@ class Heater:
                 for heating_rod in [heating_rod for heating_rod in self.__sorted_heating_rods if heating_rod.is_activated]:
                     heating_rod.deactivate(reason)        # decrease heater power consumption (1 heater only)
                     self.last_time_power_updated = datetime.now()
+                    logging.info(str(self.heating_rods_active) + " rods active")
                     break
 
     @property

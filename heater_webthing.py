@@ -16,7 +16,7 @@ class HeaterThing(Thing):
         Thing.__init__(
             self,
             'urn:dev:ops:heater-1',
-            'HeaterSwitch2',
+            'HeaterSwitch',
             ['MultiLevelSensor'],
             description
         )
