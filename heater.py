@@ -190,6 +190,7 @@ class Heater:
         self.heating_rod_power = heating_rod_power
         self.__shelly = Shelly3Pro(addr)
         self.__heating_rods = [HeatingRod(self.__shelly, 0, directory), HeatingRod(self.__shelly, 1, directory), HeatingRod(self.__shelly, 2, directory)]
+        self.last_time_heating = datetime.now()
         self.__last_time_auto_decreased = datetime.now()
         self.last_time_power_updated = datetime.now()
 
@@ -247,6 +248,10 @@ class Heater:
                     self.last_time_power_updated = datetime.now()
                     logging.info(str(self.heating_rods_active) + " rods active")
                     break
+
+        if self.heating_rods_active > 0:
+            self.last_time_heating = datetime.now()
+
 
     @property
     def __sorted_heating_rods(self) -> List[HeatingRod]:

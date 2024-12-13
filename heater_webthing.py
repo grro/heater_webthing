@@ -159,6 +159,19 @@ class HeaterThing(Thing):
                      }))
 
 
+        self.last_time_heating = Value(heater.last_time_heating.strftime("%Y-%m-%dT%H:%M"))
+        self.add_property(
+            Property(self,
+                     'last_time_heating',
+                     self.last_time_heating,
+                     metadata={
+                         'title': 'last_time_heating',
+                         "type": "string",
+                         'description': 'the last time heater active ISO8601 string (UTC)',
+                         'readOnly': True,
+                     }))
+
+
     def on_value_changed(self):
         self.ioloop.add_callback(self._on_value_changed)
 
@@ -175,6 +188,7 @@ class HeaterThing(Thing):
         self.last_time_power_updated.notify_of_external_update(self.heater.last_time_power_updated.strftime("%Y-%m-%dT%H:%M"))
         self.heater_consumption_current_year.notify_of_external_update(self.heater.heater_consumption_current_year)
         self.heater_consumption_estimated_year.notify_of_external_update(self.heater.heater_consumption_estimated_year)
+        self.last_time_heating.notify_of_external_update(self.heater.last_time_heating.strftime("%Y-%m-%dT%H:%M"))
 
 
 def run_server(description: str, port: int, addr: str, directory: str):
