@@ -171,37 +171,37 @@ class HeaterThing(Thing):
                          'readOnly': True,
                      }))
 
-        self.consumed_power_last_15_min = Value(heater.consumed_power(15))
+        self.heater_consumption_last_15_min = Value(heater.consumed_power(15))
         self.add_property(
             Property(self,
-                     'consumed_power_last_15_min',
-                     self.consumed_power_last_15_min,
+                     'heater_consumption_last_15_min',
+                     self.heater_consumption_last_15_min,
                      metadata={
-                         'title': 'consumed_power_last_15_min',
+                         'title': 'heater_consumption_last_15_min',
                          "type": "number",
                          'description': 'the consumed power of last 15 min)',
                          'readOnly': True,
                      }))
 
-        self.consumed_power_last_30_min = Value(heater.consumed_power(30))
+        self.heater_consumption_last_30_min = Value(heater.consumed_power(30))
         self.add_property(
             Property(self,
-                     'consumed_power_last_30_min',
-                     self.consumed_power_last_30_min,
+                     'heater_consumption_last_30_min',
+                     self.heater_consumption_last_30_min,
                      metadata={
-                         'title': 'consumed_power_last_30_min',
+                         'title': 'heater_consumption_last_30_min',
                          "type": "number",
                          'description': 'the consumed power of last 30 min)',
                          'readOnly': True,
                      }))
 
-        self.consumed_power_last_60_min = Value(heater.consumed_power(60))
+        self.heater_consumption_last_60_min = Value(heater.consumed_power(60))
         self.add_property(
             Property(self,
-                     'consumed_power_last_60_min',
-                     self.consumed_power_last_60_min,
+                     'heater_consumption_last_60_min',
+                     self.heater_consumption_last_60_min,
                      metadata={
-                         'title': 'consumed_power_last_60_min',
+                         'title': 'heater_consumption_last_60_min',
                          "type": "number",
                          'description': 'the consumed power of last 60 min)',
                          'readOnly': True,
@@ -225,9 +225,9 @@ class HeaterThing(Thing):
         self.heater_consumption_current_year.notify_of_external_update(self.heater.heater_consumption_current_year)
         self.heater_consumption_estimated_year.notify_of_external_update(self.heater.heater_consumption_estimated_year)
         self.last_time_heating.notify_of_external_update(self.heater.last_time_heating.strftime("%Y-%m-%dT%H:%M"))
-        self.consumed_power_last_15_min.notify_of_external_update(self.heater.consumed_power(15))
-        self.consumed_power_last_30_min.notify_of_external_update(self.heater.consumed_power(30))
-        self.consumed_power_last_60_min.notify_of_external_update(self.heater.consumed_power(60))
+        self.heater_consumption_last_15_min.notify_of_external_update(self.heater.consumed_power(15))
+        self.heater_consumption_last_30_min.notify_of_external_update(self.heater.consumed_power(30))
+        self.heater_consumption_last_60_min.notify_of_external_update(self.heater.consumed_power(60))
 
 
 def run_server(description: str, port: int, addr: str, directory: str):
