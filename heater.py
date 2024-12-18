@@ -132,6 +132,8 @@ class HeatingRod:
         self.is_activated = False
         self.__heating_secs_per_day = SimpleDB("heater_" + str(id), sync_period_sec=60, directory=directory)
         self.deactivate()
+        self.__minute_of_day_active = [False] * 24*60
+        Thread(target=self.__record_loop, daemon=True).start()
 
     def sync(self):
         try:
@@ -175,6 +177,30 @@ class HeatingRod:
             return secs
         else:
             return None
+
+    def __record_loop(self):
+        while True:
+            try:
+                now = datetime.now()
+                minutes_of_day = now.hour*60 + now.minute
+                self.__minute_of_day_active[minutes_of_day] = self.is_activated
+            except Exception as e:
+                logging.warning(str(e))
+            sleep(35)
+
+    def consumed_power(self, window_size_minutes: int) -> int:
+        now = datetime.now()
+        minutes_of_day = now.hour*60 + now.minute
+        if minutes_of_day > window_size_minutes:
+            watt_minutes= 0
+            for minute in (minutes_of_day-window_size_minutes, minutes_of_day):
+                if self.__minute_of_day_active[minute]:
+                    watt_minutes += 1
+            return round(60 * window_size_minutes / watt_minutes)
+        else:
+            return 0
+
+
 
     def __str__(self):
         return "heating rod " + str(self.id)
@@ -230,6 +256,9 @@ class Heater:
     @property
     def heating_rods_active(self) -> int:
         return len([heating_rod for heating_rod in self.__heating_rods if heating_rod.is_activated])
+
+    def consumed_power(self, window_size_minutes: int) -> int:
+        return sum([heating_rod.consumed_power(window_size_minutes) for heating_rod in self.__heating_rods])
 
     def set_heating_rods_active(self, new_num: int, reason: str = None):
         # increase
