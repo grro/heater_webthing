@@ -196,9 +196,9 @@ class HeatingRod:
             for minute in (minutes_of_day-window_size_minutes, minutes_of_day):
                 if self.__minute_of_day_active[minute]:
                     watt_minutes += 1
-            return round(60 * window_size_minutes / watt_minutes)
-        else:
-            return 0
+            if watt_minutes > 0:
+                return round(60 * window_size_minutes / watt_minutes)
+        return 0
 
 
 
