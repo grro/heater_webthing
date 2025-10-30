@@ -214,7 +214,7 @@ class Heater:
                 self.__sync()
             except Exception as e:
                 logging.warning("error occurred on sync " + str(e))
-            sleep(59)
+            sleep(4)
 
     def __statistics(self):
         reported_date = datetime.now() - timedelta(days=1)
@@ -254,4 +254,5 @@ class Heater:
     def __register_scripts(self):
         for id in range (0, 3):
             self.__shelly.upload_script(id+1, SHELLY_SCRIPT_TEMPLATE.substitute({"id": id}))
+
 
