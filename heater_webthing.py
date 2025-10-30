@@ -3,6 +3,7 @@ import sys
 import logging
 import tornado.ioloop
 from heater import Heater
+from heater_mcp import HeaterMCPServer
 
 
 
@@ -232,14 +233,18 @@ class HeaterThing(Thing):
 
 def run_server(description: str, port: int, addr: str, directory: str):
     heater = Heater(addr, directory)
+
+    mcp_server = HeaterMCPServer(port+1, heater)
     server = WebThingServer(SingleThing(HeaterThing(description, heater)), port=port, disable_host_validation=True)
     try:
         logging.info('starting the server http://localhost:' + str(port) + " (addr=" + addr + ")")
         heater.start()
+        mcp_server.start()
         server.start()
     except KeyboardInterrupt:
         logging.info('stopping the server')
         heater.stop()
+        mcp_server.stop()
         server.stop()
         logging.info('done')
 
