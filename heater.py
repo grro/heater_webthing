@@ -24,6 +24,7 @@ class HeatingRod:
         self.deactivate()
         self.__minute_of_day_active = [False] * 24*60
         Thread(target=self.__record_loop, daemon=True).start()
+        Thread(target=self.__clean_loop, daemon=True).start()
 
     def sync(self):
         try:
@@ -67,6 +68,16 @@ class HeatingRod:
             return secs
         else:
             return None
+
+    def __clean_loop(self):
+        while True:
+            try:
+                tomorrow = (datetime.now() + timedelta(days=1)).strftime('%j')
+                self.__heating_secs_per_day.put(tomorrow, 0)
+            except Exception as e:
+                logging.warning(str(e))
+            sleep(59 * 60)
+
 
     def __record_loop(self):
         while True:

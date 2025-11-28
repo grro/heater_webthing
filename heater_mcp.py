@@ -3,8 +3,6 @@ from heater import Heater
 
 
 
-
-
 class HeaterMCPServer(MCPServer):
 
     def __init__(self,port: int, heater: Heater):
