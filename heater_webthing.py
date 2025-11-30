@@ -37,7 +37,7 @@ class HeaterThing(Thing):
                          'readOnly': True,
                      }))
 
-        self.heating_rod_power = Value(heater.heating_rod_power)
+        self.heating_rod_power = Value(heater.HEATER_ROD_POWER)
         self.add_property(
             Property(self,
                      'heating_rod_power',
@@ -214,7 +214,6 @@ class HeaterThing(Thing):
 
     def _on_value_changed(self):
         self.power.notify_of_external_update(self.heater.power)
-        self.heating_rod_power.notify_of_external_update(self.heater.heating_rod_power)
         self.heating_rods.notify_of_external_update(self.heater.heating_rods)
         self.heating_rods_active.notify_of_external_update(self.heater.heating_rods_active)
         self.heating_rod0_activated.notify_of_external_update(self.heater.get_heating_rod(0).is_activated)

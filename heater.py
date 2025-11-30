@@ -92,7 +92,7 @@ class HeatingRod:
     def consumed_power(self, window_size_minutes: int) -> int:
         now = datetime.now()
         minutes_of_day = now.hour*60 + now.minute
-        if minutes_of_day > window_size_minutes:
+            if minutes_of_day > window_size_minutes:
             watt_minutes= 0
             for minute in (minutes_of_day-window_size_minutes, minutes_of_day):
                 if self.__minute_of_day_active[minute]:
@@ -109,12 +109,12 @@ class HeatingRod:
 
 
 class Heater:
+    HEATER_ROD_POWER = 500
 
-    def __init__(self, addr: str, directory: str, heating_rod_power: int = 510):
+    def __init__(self, addr: str, directory: str):
         self.__lock = RLock()
         self.__is_running = True
         self.__listener = lambda: None    # "empty" listener
-        self.heating_rod_power = heating_rod_power
         self.__shelly = Shelly3Pro(addr)
         self.__heating_rods = [HeatingRod(self.__shelly, 0, directory), HeatingRod(self.__shelly, 1, directory), HeatingRod(self.__shelly, 2, directory)]
         self.last_time_heating = datetime.now()
@@ -128,7 +128,7 @@ class Heater:
         secs_list = [heating_rod.heating_secs_of_day(day_of_year) for heating_rod in self.__heating_rods]
         heater_secs_today = sum([secs for secs in secs_list if secs is not None])
         heater_hours_today = heater_secs_today / (60*60)
-        return int(heater_hours_today * self.heating_rod_power)
+        return int(heater_hours_today * self.HEATER_ROD_POWER)
 
     @property
     def heater_consumption_today(self) -> int:
@@ -159,7 +159,7 @@ class Heater:
 
     @property
     def power(self) -> int:
-        return self.heating_rod_power * len([heating_rod for heating_rod in self.__heating_rods if heating_rod.is_activated])
+        return self.HEATER_ROD_POWER * len([heating_rod for heating_rod in self.__heating_rods if heating_rod.is_activated])
 
     def consumed_power(self, window_size_minutes: int) -> int:
         return sum([heating_rod.consumed_power(window_size_minutes) for heating_rod in self.__heating_rods])
