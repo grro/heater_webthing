@@ -92,7 +92,7 @@ class HeatingRod:
     def consumed_power(self, window_size_minutes: int) -> int:
         now = datetime.now()
         minutes_of_day = now.hour*60 + now.minute
-            if minutes_of_day > window_size_minutes:
+        if minutes_of_day > window_size_minutes:
             watt_minutes= 0
             for minute in (minutes_of_day-window_size_minutes, minutes_of_day):
                 if self.__minute_of_day_active[minute]:
@@ -101,11 +101,8 @@ class HeatingRod:
                 return round(60 * window_size_minutes / watt_minutes)
         return 0
 
-
-
     def __str__(self):
         return "heating rod " + str(self.id)
-
 
 
 class Heater:
