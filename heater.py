@@ -213,6 +213,7 @@ class Heater:
                     self.__show_total_status = True
                 else:
                     self.__show_total_status = False
+                self.__listener()
             except Exception as e:
                 pass
             sleep(1)
