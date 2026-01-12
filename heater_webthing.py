@@ -110,6 +110,18 @@ class HeaterThing(Thing):
                          'readOnly': True,
                      }))
 
+        self.heater_status = Value(heater.status)
+        self.add_property(
+            Property(self,
+                     'heater_status',
+                     self.heater_status,
+                     metadata={
+                         'title': 'heater_status',
+                         "type": "string",
+                         'description': 'heater status',
+                         'readOnly': True,
+                     }))
+
         self.heater_consumption_today = Value(heater.heater_consumption_today)
         self.add_property(
             Property(self,
@@ -228,6 +240,7 @@ class HeaterThing(Thing):
         self.heater_consumption_last_15_min.notify_of_external_update(self.heater.consumed_power(15))
         self.heater_consumption_last_30_min.notify_of_external_update(self.heater.consumed_power(30))
         self.heater_consumption_last_60_min.notify_of_external_update(self.heater.consumed_power(60))
+        self.heater_status.notify_of_external_update(self.heater.status)
 
 
 def run_server(description: str, port: int, addr: str, directory: str):

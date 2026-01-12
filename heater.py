@@ -117,6 +117,9 @@ class Heater:
         self.last_time_heating = datetime.now()
         self.__last_time_auto_decreased = datetime.now()
         self.last_time_power_updated = datetime.now()
+        self.__show_total_status = True
+        Thread(target=self.__auto_toggle_show_total_status, daemon=True).start()
+
 
     def set_listener(self, listener):
         self.__listener = listener
@@ -200,6 +203,23 @@ class Heater:
     @property
     def heating_rods(self) -> int:
         return len(self.__heating_rods)
+
+
+    def __auto_toggle_show_total_status(self):
+        while True:
+            try:
+                self.__show_total_status = not self.__show_total_status
+            except Exception as e:
+                pass
+            sleep(10)
+
+    @property
+    def status(self) -> str:
+        if self.__show_total_status:
+            return str(self.heater_consumption_today) + " Watt/Tag"
+        else:
+            pwr = str(int(self.power)) + " Watt (heizen)"
+            return pwr
 
     def __sync(self):
         for heating_rods in self.__heating_rods:
