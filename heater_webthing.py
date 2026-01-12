@@ -113,7 +113,7 @@ class HeaterThing(Thing):
         self.heater_status = Value(heater.status)
         self.add_property(
             Property(self,
-                     'heater_status',
+                     'status',
                      self.heater_status,
                      metadata={
                          'title': 'heater_status',

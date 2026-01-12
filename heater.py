@@ -204,14 +204,18 @@ class Heater:
     def heating_rods(self) -> int:
         return len(self.__heating_rods)
 
-
     def __auto_toggle_show_total_status(self):
         while True:
             try:
-                self.__show_total_status = not self.__show_total_status
+                now = datetime.now()
+                cycle_position = now.second % 20
+                if cycle_position < 10:
+                    self.__show_total_status = True
+                else:
+                    self.__show_total_status = False
             except Exception as e:
                 pass
-            sleep(10)
+            sleep(1)
 
     @property
     def status(self) -> str:
