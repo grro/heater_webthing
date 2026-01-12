@@ -222,7 +222,10 @@ class Heater:
         if self.__show_total_status:
             return str(self.heater_consumption_today) + " Watt/Tag"
         else:
-            pwr = str(int(self.power)) + " Watt (heizen)"
+            if self.power > 0:
+                pwr = str(int(self.power)) + " Watt (heizen)"
+            else:
+                pwr ="0 Watt"
             return pwr
 
     def __sync(self):
