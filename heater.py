@@ -209,7 +209,7 @@ class Heater:
         toggle_time_sec = 10
         while True:
             try:
-                cycle_position = datetime.now().second % (toggle_time_sec * 2)
+                cycle_position = self.__seconds_of_day() % (toggle_time_sec * 2)
                 self.__show_total_status = cycle_position < toggle_time_sec
                 self.__listener()
             except Exception:
