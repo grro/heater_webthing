@@ -204,19 +204,21 @@ class Heater:
     def heating_rods(self) -> int:
         return len(self.__heating_rods)
 
+
     def __auto_toggle_show_total_status(self):
+        toggle_time_sec = 10
         while True:
             try:
-                now = datetime.now()
-                cycle_position = now.second % 20
-                if cycle_position < 10:
-                    self.__show_total_status = True
-                else:
-                    self.__show_total_status = False
+                cycle_position = datetime.now().second % (toggle_time_sec * 2)
+                self.__show_total_status = cycle_position < toggle_time_sec
                 self.__listener()
-            except Exception as e:
+            except Exception:
                 pass
-            sleep(1)
+            sleep(toggle_time_sec - (self.__seconds_of_day() % toggle_time_sec))
+
+    def __seconds_of_day(self) -> int:
+        now = datetime.now()
+        return int((now - now.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds())
 
     @property
     def status(self) -> str:
