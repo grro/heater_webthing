@@ -218,7 +218,7 @@ class Heater:
 
     def __seconds_of_day(self) -> int:
         now = datetime.now()
-        return int((now - now.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds())
+        return now.hour * 3600 + now.minute * 60 + now.second
 
     @property
     def status(self) -> str:
