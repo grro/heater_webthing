@@ -9,9 +9,13 @@ class HeaterMCPServer(MCPServer):
         super().__init__("heater", port)
         self.heater = heater
 
-        @self.mcp.tool(name="get_heater_power", description="Current heater energy consumption in Watt")
+        @self.mcp.tool(name="get_heater_power", description="Current total heater energy consumption in Watt")
         def get_heater_power() -> int:
             return self.heater.power
+
+        @self.mcp.tool(name="get_single_rod_power", description="Power consumption of a single heating rod in Watt")
+        def get_heating_rod_power() -> int:
+            return self.heater.HEATER_ROD_POWER
 
         @self.mcp.tool(name="get_active_heating_rods", description="Number of currently active heating rods")
         def get_active_heating_rods() -> int:
