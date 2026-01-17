@@ -5,7 +5,7 @@ from mcplib.server import MCPServer
 class HeaterMCPServer(MCPServer):
 
     def __init__(self,port: int, heater: Heater):
-        super().__init__("heater", port)
+        super().__init__("pv_heater", port)
         self.heater = heater
 
         @self.mcp.tool(name="get_heater_power", description="Current total heater energy consumption in Watt")
