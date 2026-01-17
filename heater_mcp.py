@@ -1,6 +1,5 @@
-from mcp_server import MCPServer
 from heater import Heater
-
+from mcplib.server import MCPServer
 
 
 class HeaterMCPServer(MCPServer):
