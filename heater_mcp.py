@@ -24,7 +24,7 @@ class HeaterMCPServer(MCPServer):
                 f"- Current Power Draw: {self.heater.power} W\n"
                 f"- Active Rods: {self.heater.heating_rods_active}\n"
                 f"- Power per Rod: {self.heater.HEATER_ROD_POWER} W\n"
-                f"- Hardware Limit: {self.heater.HEATER_ROD_POWER} rods total"
+                f"- Hardware Limit: 3 rods total"
             )
 
         @self.mcp.tool(name="set_active_heating_rods",
