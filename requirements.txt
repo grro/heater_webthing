@@ -1,4 +1,4 @@
 requests>=2.31.0
 redzoo>=0.3.6
 webthing>=0.15.0
-mcp-baselib>=0.0.6
+mcp-baselib>=1.0.0
