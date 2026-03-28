@@ -118,8 +118,6 @@ class Heater:
         self.__last_time_auto_decreased = datetime.now()
         self.last_time_power_updated = datetime.now()
         self.__show_total_status = True
-        Thread(target=self.__auto_toggle_show_total_status, daemon=True).start()
-
 
     def set_listener(self, listener):
         self.__listener = listener
@@ -204,32 +202,17 @@ class Heater:
     def heating_rods(self) -> int:
         return len(self.__heating_rods)
 
-
-    def __auto_toggle_show_total_status(self):
-        toggle_time_sec = 10
-        while True:
-            try:
-                cycle_position = datetime.now().second % (toggle_time_sec * 4)
-                self.__show_total_status = cycle_position < toggle_time_sec
-                self.__listener()
-            except Exception:
-                pass
-            sleep(toggle_time_sec - (self.__seconds_of_day() % toggle_time_sec))
-
     def __seconds_of_day(self) -> int:
         now = datetime.now()
         return now.hour * 3600 + now.minute * 60 + now.second
 
     @property
     def status(self) -> str:
-        if self.__show_total_status:
-            return str(self.heater_consumption_today) + " Watt/Tag"
+        if self.power > 0:
+            pwr = str(int(self.power)) + " Watt (heizen)"
         else:
-            if self.power > 0:
-                pwr = str(int(self.power)) + " Watt (heizen)"
-            else:
-                pwr ="0 Watt"
-            return pwr
+            pwr ="0 Watt"
+        return pwr
 
     def __sync(self):
         for heating_rods in self.__heating_rods:
