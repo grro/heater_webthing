@@ -209,7 +209,7 @@ class Heater:
     @property
     def status(self) -> str:
         if self.power > 0:
-            pwr = str(int(self.power)) + " Watt (heizen)"
+            pwr = str(int(self.power)) + " Watt"
         else:
             pwr ="0 Watt"
         return pwr
