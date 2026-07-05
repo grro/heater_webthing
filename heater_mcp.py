@@ -13,18 +13,34 @@ class HeaterMCPServer(MCPServer):
         self.heater = heater
 
         @self.mcp.tool(name="get_heater_status",
-                       description="Returns current power (W), active rods, and rod capacity.")
+                       description="Returns current power (W), active rods, rod capacity, recent consumption, and last heating time.")
         def get_heater_status() -> str:
             """
             Provides a real-time status report of the heating system.
             Use this to check the current load and physical limits of the heater.
             """
+            last_heating = self.heater.last_time_heating.strftime("%Y-%m-%dT%H:%M") if self.heater.last_time_heating else "N/A"
+            last_power_update = self.heater.last_time_power_updated.strftime("%Y-%m-%dT%H:%M") if self.heater.last_time_power_updated else "N/A"
+            rod0 = "On" if self.heater.get_heating_rod(0).is_activated else "Off"
+            rod1 = "On" if self.heater.get_heating_rod(1).is_activated else "Off"
+            rod2 = "On" if self.heater.get_heating_rod(2).is_activated else "Off"
             return (
                 f"Heater Status Overview:\n"
                 f"- Current Power Draw: {self.heater.power} W\n"
                 f"- Active Rods: {self.heater.heating_rods_active}\n"
+                f"  - Rod 0: {rod0}\n"
+                f"  - Rod 1: {rod1}\n"
+                f"  - Rod 2: {rod2}\n"
                 f"- Power per Rod: {self.heater.HEATER_ROD_POWER} W\n"
-                f"- Hardware Limit: 3 rods total"
+                f"- Hardware Limit: 3 rods total\n"
+                f"- Consumption (last 15 min): {self.heater.consumed_power(15)} W\n"
+                f"- Consumption (last 30 min): {self.heater.consumed_power(30)} W\n"
+                f"- Consumption (last 60 min): {self.heater.consumed_power(60)} W\n"
+                f"- Consumption (today): {self.heater.heater_consumption_today} W\n"
+                f"- Consumption (current year): {self.heater.heater_consumption_current_year} W\n"
+                f"- Consumption (estimated year): {self.heater.heater_consumption_estimated_year} W\n"
+                f"- Last Time Heating: {last_heating}\n"
+                f"- Last Power Update: {last_power_update}"
             )
 
         @self.mcp.tool(name="set_active_heating_rods",
