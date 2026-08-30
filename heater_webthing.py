@@ -3,7 +3,6 @@ import sys
 import logging
 import tornado.ioloop
 from heater import Heater
-from heater_mcp import HeaterMCPServer
 
 
 
@@ -242,27 +241,3 @@ class HeaterThing(Thing):
         self.heater_consumption_last_60_min.notify_of_external_update(self.heater.consumed_power(60))
         self.heater_status.notify_of_external_update(self.heater.status)
 
-
-def run_server(description: str, port: int, addr: str, directory: str):
-    heater = Heater(addr, directory)
-
-    mcp_server = HeaterMCPServer(port+1, heater)
-    server = WebThingServer(SingleThing(HeaterThing(description, heater)), port=port, disable_host_validation=True)
-    try:
-        logging.info('starting the server http://localhost:' + str(port) + " (addr=" + addr + ")")
-        heater.start()
-        mcp_server.start()
-        server.start()
-    except KeyboardInterrupt:
-        logging.info('stopping the server')
-        heater.stop()
-        mcp_server.stop()
-        server.stop()
-        logging.info('done')
-
-
-if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s %(name)-20s: %(levelname)-8s %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
-    logging.getLogger('tornado.access').setLevel(logging.ERROR)
-    logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
-    run_server("description", int(sys.argv[1]), sys.argv[2], sys.argv[3])
