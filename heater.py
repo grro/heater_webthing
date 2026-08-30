@@ -275,4 +275,4 @@ class Heater:
                     self.__shelly.start_script(id + 1)
             except Exception as e:
                 logging.warning("error occurred on __auto_restart_scripts " + str(e))
-            sleep(27 * 60 * 60)
+            sleep(7 * 60 * 60)
