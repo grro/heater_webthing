@@ -1,4 +1,5 @@
-requests>=2.31.0
-redzoo>=0.3.6
+requests>=2.33.0
+redzoo>=0.3.7
 webthing>=0.15.0
-mcp-baselib>=1.0.3
+fastmcp==3.2.4
+zeroconf>=0.148.0
