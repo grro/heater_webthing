@@ -251,7 +251,7 @@ class Heater:
             sleep(10 * 60)
 
     def __auto_decrease(self):
-        auto_decrease_time_min = 63
+        auto_decrease_time_min = 29
         while self.__is_running:
             try:
                 if self.heating_rods_active > 0:
