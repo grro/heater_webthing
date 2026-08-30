@@ -158,13 +158,8 @@ class Shelly3Pro:
                    what="Switch.Set(%d, %s)" % (switch_id, on))
 
     # ---------- Scripting ----------
-    def install_auto_off(self, switch_id: int,
-                         off_after_minutes: int = AUTO_OFF_MINUTES) -> int:
-        """Installiert bzw. aktualisiert die Sicherheitsabschaltung fuer einen Kanal."""
-        return self.upload_script(
-            name="auto_off_" + str(switch_id),
-            code=build_auto_off_script(switch_id, off_after_minutes),
-        )
+    def install_auto_off(self, switch_id: int, off_after_minutes: int = AUTO_OFF_MINUTES) -> int:
+        return self.upload_script(name="auto_off_" + str(switch_id), code=build_auto_off_script(switch_id, off_after_minutes),)
 
     def install_all_auto_off(self, off_after_minutes: int = AUTO_OFF_MINUTES) -> dict:
         """Alle drei Kanaele. Gibt {switch_id: script_id} zurueck."""
@@ -266,6 +261,5 @@ class Shelly3Pro:
         if status.get('running'):
             logging.debug("shelly script %d already running", script_id)
             return
-        self.__rpc('/rpc/Script.Start', params={'id': script_id},
-                   what="Script.Start(%d)" % script_id)
+        self.__rpc('/rpc/Script.Start', params={'id': script_id}, what="Script.Start(%d)" % script_id)
         logging.info("shelly script %d started", script_id)

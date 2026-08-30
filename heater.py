@@ -6,7 +6,7 @@ from redzoo.math.display import duration
 from time import sleep
 from threading import RLock
 from redzoo.database.simple import SimpleDB
-from shelly import Shelly3Pro, SHELLY_SCRIPT_TEMPLATE
+from shelly import Shelly3Pro
 
 
 
@@ -223,7 +223,6 @@ class Heater:
         self.__is_running = False
 
     def start(self):
-        Thread(target=self.__register_scripts, daemon=True).start()
         Thread(target=self.__measure, daemon=True).start()
         Thread(target=self.__statistics, daemon=True).start()
         Thread(target=self.__auto_decrease, daemon=True).start()
@@ -252,7 +251,7 @@ class Heater:
             sleep(10 * 60)
 
     def __auto_decrease(self):
-        auto_decrease_time_min = 23
+        auto_decrease_time_min = 63
         while self.__is_running:
             try:
                 if self.heating_rods_active > 0:
@@ -264,16 +263,16 @@ class Heater:
             sleep(60)
 
     def __auto_restart_scripts(self):
+        try:
+            for switch_id in range(0, 3):
+                self.__shelly.install_auto_off(switch_id)
+        except Exception as e:
+            logging.warning("error occurred on __auto_restart_scripts during install_auto_off: " + str(e))
+
         while self.__is_running:
             try:
-                for id in range (0, 3):
-                    self.__shelly.restart_script(id+1)
+                for id in range(0, 3):
+                    self.__shelly.start_script(id + 1)
             except Exception as e:
                 logging.warning("error occurred on __auto_restart_scripts " + str(e))
-            sleep(7 * 60 * 60)
-
-    def __register_scripts(self):
-        for id in range (0, 3):
-            self.__shelly.upload_script(id+1, SHELLY_SCRIPT_TEMPLATE.substitute({"id": id}))
-
-
+            sleep(27 * 60 * 60)
